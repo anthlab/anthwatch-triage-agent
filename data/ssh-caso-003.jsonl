@@ -1,0 +1,5 @@
+{"id":"evt-001","timestamp":"2026-11-11T09:00:00Z","host":"anthwatch-server","src_ip":"192.0.2.10","user":"usuario-demo","event":"ssh_failed"}
+{"id":"evt-002","timestamp":"2026-11-11T09:00:05Z","host":"anthwatch-server","src_ip":"192.0.2.10","user":"usuario-demo","event":"ssh_failed"}
+{"id":"evt-003","timestamp":"2026-11-11T09:00:10Z","host":"anthwatch-server","src_ip":"192.0.2.10","user":"otro-usuario","event":"ssh_failed"}
+{"id":"evt-004","timestamp":"2026-11-11T09:00:15Z","host":"anthwatch-server","src_ip":"192.0.2.10","user":"usuario-demo","event":"ssh_failed"}
+{"id":"evt-005","timestamp":"2026-11-11T09:00:23Z","host":"anthwatch-server","src_ip":"192.0.2.10","user":"usuario-demo","event":"ssh_success"}

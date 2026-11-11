@@ -1,0 +1,9 @@
+{
+  "id": "alerta-demo-001",
+  "rule_id": "100100",
+  "description": "Acceso SSH correcto después de varios fallos",
+  "timestamp": "2026-11-11T09:00:23Z",
+  "host": "anthwatch-server",
+  "src_ip": "192.0.2.10",
+  "user": "usuario-demo"
+}
