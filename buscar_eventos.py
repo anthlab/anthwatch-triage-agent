@@ -12,7 +12,7 @@ def buscar_eventos(ruta, usuario, servidor, ip, desde, hasta):
             hora = datetime.fromisoformat(evento["timestamp"])
 
             if (
-                evento["user"] == usuario
+                (usuario is None or evento["user"] == usuario)
                 and evento["host"] == servidor
                 and evento["src_ip"] == ip
                 and desde <= hora <= hasta

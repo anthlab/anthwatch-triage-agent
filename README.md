@@ -1,12 +1,16 @@
 # Anthwatch Triage Agent
 
-Agente local que redacta borradores de triaje SOC a partir de alertas de Wazuh. La demo usa datos sintéticos basados en el caso SSH `100100` de [Anthwatch SOC Lab](https://github.com/anthlab/anthwatch-soc-lab).
+Prototipo local en Python para el triaje de alertas con Qwen3 y Ollama. Usa registros SSH sintéticos basados en la regla `100100` de [Anthwatch SOC Lab](https://github.com/anthlab/anthwatch-soc-lab).
 
-Qwen3 recibe la alerta y solicita la herramienta `obtener_evidencia`. Python comprueba la solicitud, consulta los eventos locales y entrega el resultado al modelo. Antes de mostrar el borrador, el agente rechaza las citas con IDs `evt-...` ajenos a la evidencia.
+## Cómo funciona
 
-## Ejecutar la demo
+- `obtener_evidencia()` consulta los eventos del usuario, servidor e IP de la alerta en los 60 segundos previos, incluido el instante de la alerta.
+- `buscar_contexto(segundos)` consulta opcionalmente actividad de otras cuentas desde la misma IP y en el mismo servidor. Python admite entre 60 y 300 segundos y muestra el contexto aparte del recuento principal.
+- Qwen3 devuelve en JSON los IDs de los fallos y éxitos. Python comprueba ambas listas contra los registros, calcula la duración y genera el informe. Si la clasificación falla, permite un reintento con la evidencia ya consultada.
 
-Con Python y Ollama instalados, ejecuta desde la raíz del repositorio:
+## Ejecutar
+
+Requiere Python 3.11 o superior y Ollama en ejecución. El desarrollo se hizo con Python 3.14.4.
 
 ```bash
 python3 -m venv .venv
@@ -16,16 +20,25 @@ ollama pull qwen3:4b
 python agente.py
 ```
 
-El caso contiene tres fallos SSH y una autenticación exitosa en 23 segundos. La autorización del acceso y la causa de los fallos quedan sin determinar.
+## Salida observada en el caso base
+
+```text
+Consulta ejecutada: obtener_evidencia
+Borrador de triaje
+Fallos SSH (3): evt-001, evt-002, evt-004
+Éxitos SSH (1): evt-005
+Ventana observada: 09:00:00–09:00:23 UTC (23 s)
+Por confirmar: autorización del acceso y causa de los fallos.
+```
 
 ## Pruebas
 
 ```bash
-python -m unittest -v test_agente
+python -m unittest -v
 ```
 
-Las dos pruebas simulan las respuestas del modelo y comprueban que el agente muestra un borrador con citas válidas y rechaza uno que cita un evento ajeno al caso.
+Las ocho pruebas cubren los filtros, el rechazo de llamadas inválidas, la clasificación, el contexto y el reintento. Las pruebas del agente simulan las respuestas de Qwen3. La ejecución completa con Ollama de la versión con dos herramientas quedó pendiente tras superar el límite de 180 segundos.
 
 ## Alcance
 
-La demo lee archivos locales y genera un borrador para revisión humana. El control comprueba las referencias a eventos. La interpretación del incidente requiere revisión.
+La demo trabaja con archivos locales y genera un borrador para revisión humana. Una autenticación exitosa deja abierta la cuestión de si el acceso estaba autorizado. En una integración con Wazuh, los campos de los registros deben tratarse como datos no confiables: pueden contener texto que parezca una instrucción para el modelo.
